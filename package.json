@@ -1,0 +1,23 @@
+{
+  "name": "@voodoollama/interview-prep",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha -r ts-node/register test/**/*.ts"
+  },
+  "author": "Ryan Gilson <gilson.ryanm@gmail.com> (http://www.ryangilson.com)",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^9.6.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/mocha": "^5.0.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.5",
+    "ts-node": "^5.0.1",
+    "typescript": "^2.8.1"
+  }
+}
