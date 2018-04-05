@@ -1,8 +1,8 @@
 
-class BinarySearchTree<T> {
+export class BinarySearchTree<T> {
 
-	private root: IBinarySearchTreeNode<T> | null;
-	private count: number;
+	public root: IBinarySearchTreeNode<T> | null;
+	public count: number;
 	private comparator: IComparator<T>;
 
 	constructor(comparator?: IComparator<T>) {
@@ -11,83 +11,12 @@ class BinarySearchTree<T> {
 		this.root = null;
 	}
 
-	/**
-	 * Traverses the binary search tree using in-order traversal
-	 * @param node 
-	 * @param callback 
-	 */
-	traverseInOrder(node: IBinarySearchTreeNode<T> | null, callback?: any) {
-		if (node) {
-			this.traverseInOrder(node.left, callback);
-
-			if (callback) {
-				callback(node);
-			}
-
-			this.traverseInOrder(node.right, callback);
-		}
+	delete(value: T) {
+		
 	}
 
 	/**
-	 * Traverses the binary search tree using post-order traversal
-	 * @param node 
-	 * @param callback 
-	 */
-	traversePostOrder(node: IBinarySearchTreeNode<T> | null, callback?: any) {
-		if (node) {
-			this.traversePostOrder(node.left, callback);
-			this.traversePostOrder(node.right, callback);
-
-			if (callback) {
-				callback(node);
-			}
-		}
-	}
-
-	/**
-	 * Traverses the binary search tree using pre-order traversal
-	 * @param node 
-	 * @param callback 
-	 */
-	traversePreOrder(node: IBinarySearchTreeNode<T> | null, callback?: any) {
-		if (node) {
-			if (callback) {
-				callback(node);
-			}
-
-			this.traversePreOrder(node.left, callback);
-			this.traversePreOrder(node.right, callback);
-		}
-	}
-
-	/**
-	 * Traverses the binary search tree using level-order traversal (breadth-first)
-	 */
-	traverseLevelOrder(node: IBinarySearchTreeNode<T> | null, callback?: any) {
-		const queue = [];
-
-		queue.push(node);
-
-		while (queue.length) {
-			let currentNode = queue.shift();
-
-			if (callback) {
-				callback(currentNode);
-			}
-
-			if (currentNode) {
-				if (currentNode.left) {
-					queue.push(currentNode.left);
-				}
-				if (currentNode.right) {
-					queue.push(currentNode.right);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Inserts a new node into the binary tree
+	 * Inserts a new node into the binary search tree
 	 */
 	insert(value: T) {
 		if (!this.root) {
@@ -107,6 +36,7 @@ class BinarySearchTree<T> {
 				if (!currentNode.left) {
 					currentNode.left = new BinarySearchTreeNode(value);
 					this.count++;
+
 					break;
 				}
 				else {
@@ -118,6 +48,7 @@ class BinarySearchTree<T> {
 				if (!currentNode.right) {
 					currentNode.right = new BinarySearchTreeNode(value);
 					this.count++;
+
 					break;
 				}
 				else {
@@ -127,6 +58,85 @@ class BinarySearchTree<T> {
 			else {
 				// Duplicate value, ignore
 				break;
+			}
+		}
+	}
+
+	/**
+	 * Simple toString helper method, displayed in breadth-first order
+	 */
+	toString() {
+		this.traverseLevelOrder(this.root, (node: IBinarySearchTreeNode<T>) => {
+			console.log(node.toString());
+		});
+	}
+
+	/**
+	 * Traverses the binary search tree using in-order traversal
+	 */
+	traverseInOrder(node: IBinarySearchTreeNode<T> | null, callback?: IVisitor<T>) {
+		if (node) {
+			this.traverseInOrder(node.left, callback);
+
+			if (callback) {
+				callback(node);
+			}
+
+			this.traverseInOrder(node.right, callback);
+		}
+	}
+
+	/**
+	 * Traverses the binary search tree using post-order traversal
+	 */
+	traversePostOrder(node: IBinarySearchTreeNode<T> | null, callback?: IVisitor<T>) {
+		if (node) {
+			this.traversePostOrder(node.left, callback);
+			this.traversePostOrder(node.right, callback);
+
+			if (callback) {
+				callback(node);
+			}
+		}
+	}
+
+	/**
+	 * Traverses the binary search tree using pre-order traversal
+	 */
+	traversePreOrder(node: IBinarySearchTreeNode<T> | null, callback?: IVisitor<T>) {
+		if (node) {
+			if (callback) {
+				callback(node);
+			}
+
+			this.traversePreOrder(node.left, callback);
+			this.traversePreOrder(node.right, callback);
+		}
+	}
+
+	/**
+	 * Traverses the binary search tree using level-order traversal (breadth-first)
+	 */
+	traverseLevelOrder(node: IBinarySearchTreeNode<T> | null, callback?: IVisitor<T>) {
+		const queue = [];
+
+		queue.push(node);
+
+		while (queue.length) {
+			let currentNode = queue.shift();
+
+			if (currentNode) {
+				if (callback) {
+					callback(currentNode);
+				}
+
+				if (currentNode.left) {
+					queue.push(currentNode.left);
+				}
+
+				if (currentNode.right) {
+					queue.push(currentNode.right);
+				}
 			}
 		}
 	}
@@ -152,7 +162,7 @@ function DefaultComparator<T>(x: T, y: T): CompareResult {
 	if (x < y) {
 		return -1;
 	}
-	else if (y > x) {
+	else if (x > y) {
 		return 1;
 	}
 
@@ -160,8 +170,8 @@ function DefaultComparator<T>(x: T, y: T): CompareResult {
 }
 
 enum CompareResult {
-	LESS_THAN = -1,
-	EQUAL = 0,
+	LESS_THAN    = -1,
+	EQUAL        = 0,
 	GREATER_THAN = 1
 }
 
@@ -173,4 +183,13 @@ interface IBinarySearchTreeNode<T> {
 
 interface IComparator<T> {
 	(x: T, y: T): CompareResult;
+}
+
+interface IVisitor<T> {
+	(x: IBinarySearchTreeNode<T>): T | SIGNAL | void;
+}
+
+enum SIGNAL {
+	CONTINUE = 0,
+	HALT     = 1
 }
